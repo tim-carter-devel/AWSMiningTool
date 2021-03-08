@@ -29,6 +29,7 @@ import lib.os
 import lib.view
 
 
+
 ## REGION: FUNCTION DEFINITIONS
 
 def main():
@@ -37,15 +38,15 @@ def main():
     
     # Check to see if .conf files exist
     conf_list = ['aws.conf', 'local.conf']
-    conf_check = lib.os.files_exist('./conf/', conf_list)
+    conf_check = lib.os.files_exist('conf/', conf_list)
 
     if conf_check:
         ## Parse arguments
         arg_parser = classes.ArgParser.ArgParser()
         ## Select profile
         profile_name = arg_parser.get_profile()
-        aws_dict = lib.os.read_config('./conf/', 'aws.conf', profile_name)
-        local_dict = lib.os.read_config('./conf/', 'local.conf', profile_name)
+        aws_dict = lib.os.read_config('conf/', 'aws.conf', profile_name)
+        local_dict = lib.os.read_config('conf/', 'local.conf', profile_name)
         profile = classes.Profile.Profile(profile_name, local_dict['hostname'], local_dict['ip_address'], aws_dict['region'], aws_dict['idp'], aws_dict['mfa'] )
         
         if profile.name == "test" or profile.name == "debug":
@@ -66,11 +67,11 @@ def main():
             setup_wizard = classes.SetupWizard.SetupWizard()
             # Write configs
             profile = setup_wizard.profile
-            aws_check = lib.os.write_config('./conf/', 'aws.conf', profile, setup_wizard.aws)
-            local_check = lib.os.write_config('./conf/', 'local.conf', profile, setup_wizard.local)
+            aws_check = lib.os.write_config('conf/', 'aws.ini', profile, setup_wizard.aws)
+            local_check = lib.os.write_config('conf/', 'local.ini', profile, setup_wizard.local)
 
-            if aws_check and local_check:
-                logger.info("Profile created: {}".format(profile))
+            #if aws_check and local_check:
+                #logger.info("Profile created: {}".format(profile))
 
 
 ## REGION:  CODE EXECUTION
