@@ -37,6 +37,7 @@ This data is organized into a dictionary and used a reference for diagramming.  
  ```
  ### AWS Permissions
  Create a role to access AWS services with the _SecurityAudit_ and _WAFReadOnlyAccess_ managed policies attached.
+ 
  ### Command Line Options
  ```
  usage: main.py [-h] [-p] [-d] [-t]
@@ -86,7 +87,19 @@ python main.py -p <profile name>
 ### AWS Data Collection
 Once the tool is able to authenticate against an AWS and assume a role with adequate permissions, it builds a dictionary based on that account's architecture.  If you would like a reference model for an account, you can look at [_account_reference.json_](accounts/account_reference.json).
 
+### Visualization
 
+The visualizer builds the diagram in the following tiers:
 
-
- 
+1. EXTERNAL TO AWS CLUSTERLESS
+    - Contains: Users, DNS, WAF, CloudFront, Cross Account VPC Peering (CAVP)
+2. ACCOUNT CLUSTER
+    - Contains: CAVP Accounts, Account ID, Account Alias, Global S3 Buckets
+3. VPC CLUSTER
+    - Contains: VPC, CAVP, VPC Peering, Internet Gateways, Load balancers, S3 buckets
+4. REGION CLUSTER
+    - S3 buckets, WAF Regional, DynamoDB
+5. AVAILABILITY ZONE (AZ) CLUSTER
+    - Contains: RDS
+6. SUBNET CLUSTER
+    - Contains: Security Groups, EC2 Instances
