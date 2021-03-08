@@ -28,50 +28,50 @@ import classes.Visualizer
 import lib.os
 import lib.view
 
-
-
 ## REGION: FUNCTION DEFINITIONS
 
 def main():
     ## Intro
     lib.view.intro()
-    
-    # Check to see if .conf files exist
-    conf_list = ['aws.conf', 'local.conf']
-    conf_check = lib.os.files_exist('conf/', conf_list)
 
-    if conf_check:
-        ## Parse arguments
-        arg_parser = classes.ArgParser.ArgParser()
-        ## Select profile
-        profile_name = arg_parser.get_profile()
-        aws_dict = lib.os.read_config('conf/', 'aws.conf', profile_name)
-        local_dict = lib.os.read_config('conf/', 'local.conf', profile_name)
-        profile = classes.Profile.Profile(profile_name, local_dict['hostname'], local_dict['ip_address'], aws_dict['region'], aws_dict['idp'], aws_dict['mfa'] )
-        
-        if profile.name == "test" or profile.name == "debug":
-            ## Visualize Dummy Data
-            visualizer = classes.Visualizer.Visualizer()
-            account_json = "example.json"
-            account_refs_json = "account_reference.json"
-            account_dict = lib.os.json_to_dict(account_json)
-            account_refs_dict = lib.os.json_to_dict(account_refs_json)
-            visualizer.build_arch_diag(account_dict, account_refs_dict)
-        else:
-            ## Create new account dictionary and visualize
-            print("Instantiate AWS Class")
+    ## Parse arguments
+    arg_parser = classes.ArgParser.ArgParser()
+    ## Select profile
+    data_mode = arg_parser.get_data_mode()
+
+    ## If running in test or debug, use dummy data 
+    if data_mode == "dummy":
+        ## Visualize Dummy Data
+        visualizer = classes.Visualizer.Visualizer()
+        account_json = "example.json"
+        account_refs_json = "account_reference.json"
+        account_dict = lib.os.json_to_dict(account_json)
+        account_refs_dict = lib.os.json_to_dict(account_refs_json)
+        visualizer.build_arch_diag(account_dict, account_refs_dict)
     else:
-       first_time = lib.view.first_check()
-       if first_time:
-            # The Setup Wizard collects config information from the end user
-            setup_wizard = classes.SetupWizard.SetupWizard()
-            # Write configs
-            profile = setup_wizard.profile
-            aws_check = lib.os.write_config('conf/', 'aws.ini', profile, setup_wizard.aws)
-            local_check = lib.os.write_config('conf/', 'local.ini', profile, setup_wizard.local)
+        # Check to see if .conf files exist
+        conf_list = ['aws.conf', 'local.conf']
+        conf_check = lib.os.files_exist('conf/', conf_list)
 
-            #if aws_check and local_check:
-                #logger.info("Profile created: {}".format(profile))
+        if conf_check:
+            aws_dict = lib.os.read_config('conf/', 'aws.conf', profile_name)
+            local_dict = lib.os.read_config('conf/', 'local.conf', profile_name)
+            profile = classes.Profile.Profile(profile_name, local_dict['hostname'], local_dict['ip_address'], aws_dict['region'], aws_dict['idp'], aws_dict['mfa'] )
+        else:
+            first_time = lib.view.first_check()
+            if first_time:
+                    # The Setup Wizard collects config information from the end user
+                    setup_wizard = classes.SetupWizard.SetupWizard()
+                    # Write configs
+                    profile = setup_wizard.profile
+                    aws_check = lib.os.write_config('conf/', 'aws.ini', profile, setup_wizard.aws)
+                    local_check = lib.os.write_config('conf/', 'local.ini', profile, setup_wizard.local)
+    
+    
+
+        #if aws_check and local_check:
+            #logger.info("Profile created: {}".format(profile))
+        print("Instantiate AWS Class")
 
 
 ## REGION:  CODE EXECUTION
